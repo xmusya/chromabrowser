@@ -1,0 +1,16 @@
+#!/bin/sh
+# Launcher that uses the project's virtualenv (created by install.sh).
+# Resolve symlinks so ~/.local/bin/chroma still finds the project venv.
+SELF=$0
+while [ -L "$SELF" ]; do
+    LINK=$(readlink "$SELF")
+    case $LINK in
+        /*) SELF=$LINK ;;
+        *) SELF=$(dirname -- "$SELF")/$LINK ;;
+    esac
+done
+DIR=$(CDPATH= cd -- "$(dirname -- "$SELF")" && pwd)
+if [ -x "$DIR/../.venv/bin/python" ]; then
+    exec "$DIR/../.venv/bin/python" -m chromabrowser "$@"
+fi
+exec python3 -m chromabrowser "$@"
